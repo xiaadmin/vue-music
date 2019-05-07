@@ -1,0 +1,22 @@
+#########javascript形参实参问题##############
+
+common/js/util 中randomList 参数list 没有重新赋值给其他变量就使用
+导致调用他的play.vue 中 changeMode: function () {} 下调用此函数randomList(this.sequencelist) 时，
+传递的this.sequencelist值也发生改变
+不知怎么回事？？？？？？？？？
+singerdetail.vue  musiclist.vue  list.vue 中的this.songs也成了this.sequencelist改变后的值
+导致点击singerdetail 中的而是随机的歌曲
+
+经发现list.vue点击传递回的item是和之前顺序列表是一样的 所以层层传递item
+
+而后将singerdetail 页面中的selectMusic: function (item) {}方法中的
+this._getSongVkey(this.song[this.currentIndex].mid)改为
+this._getSongVkey(item.mid)
+虽然可以播放出相应的歌曲，但是play.vue界面显示不对(不是相应的歌曲界面)
+
+随后经过一步步查找，发现在切换播放模式时，this.sequencelist发生改变
+
+finally,锁定randomList()函数，在randomList()直接将传递的参数拿来修改并return，从而导致实参值发生改变
+
+而在之前找bug时，也有怀疑randomList()中参数是不是被修改了，
+但是感觉不太可能，就一晃而过。。。。
